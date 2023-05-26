@@ -8,6 +8,7 @@ typedef struct Game {
   char *title;
   int fps;
   Board board;
+  Tetromino current_tetromino;
 } Game;
 
 Game gameInit(Vector2 screen_size, char *title, int fps, Vector2 board_pos,

@@ -11,6 +11,7 @@ Tetromino initTetromino(Board *board, Shape shape) {
   Tetromino tetromino;
   tetromino.shape = shape;
   tetromino.board = board;
+  tetromino.rotation = UP;
 
   switch (shape) {
   case STRAIGHT: {
@@ -51,7 +52,7 @@ Tetromino initTetromino(Board *board, Shape shape) {
     tetromino.dimension = 3;
     tetromino.tiles =
         malloc(sizeof(bool) * tetromino.dimension * tetromino.dimension);
-    bool arr[] = {0, 1, 0, 1, 1, 1, 0, 0, 0};
+    bool arr[] = {1, 0, 0, 1, 1, 1, 0, 0, 0};
     for (int i = 0; i < tetromino.dimension; i++) {
       tetromino.tiles[i] = arr[i];
     }
@@ -63,7 +64,7 @@ Tetromino initTetromino(Board *board, Shape shape) {
     tetromino.tiles =
         malloc(sizeof(bool) * tetromino.dimension * tetromino.dimension);
 
-    bool arr[] = {1, 0, 0, 1, 1, 1, 0, 0, 0};
+    bool arr[] = {0, 0, 1, 1, 1, 1, 0, 0, 0};
     for (int i = 0; i < tetromino.dimension; i++) {
       tetromino.tiles[i] = arr[i];
     }
@@ -74,7 +75,7 @@ Tetromino initTetromino(Board *board, Shape shape) {
     tetromino.dimension = 3;
     tetromino.tiles =
         malloc(sizeof(bool) * tetromino.dimension * tetromino.dimension);
-    bool arr[] = {0, 1, 0, 1, 1, 1, 0, 0, 0};
+    bool arr[] = {0, 1, 1, 1, 1, 0, 0, 0, 0};
     for (int i = 0; i < tetromino.dimension; i++) {
       tetromino.tiles[i] = arr[i];
     }
@@ -85,12 +86,14 @@ Tetromino initTetromino(Board *board, Shape shape) {
     tetromino.dimension = 3;
     tetromino.tiles =
         malloc(sizeof(bool) * tetromino.dimension * tetromino.dimension);
-    bool arr[] = {0, 1, 0, 1, 1, 1, 0, 0, 0};
+    bool arr[] = {1, 1, 0, 0, 1, 1, 0, 0, 0};
     for (int i = 0; i < tetromino.dimension; i++) {
       tetromino.tiles[i] = arr[i];
     }
     break;
   }
+  default:
+    break;
   }
 
   tetromino.position =
@@ -100,17 +103,53 @@ Tetromino initTetromino(Board *board, Shape shape) {
 }
 
 void drawTetromino(const Tetromino *tetromino) {
-  for (int x = 0; x < tetromino->dimension; x++) {
-    for (int y = 0; y < tetromino->dimension; y++) {
-      bool tile = tetromino->tiles[x * tetromino->dimension + y];
+  for (int y = 0; y < tetromino->dimension; y++) {
+    for (int x = 0; x < tetromino->dimension; x++) {
+      bool tile;
+      switch (tetromino->rotation) {
+      case UP:
+        tile = tetromino->tiles[y * tetromino->dimension + x];
+        break;
+      case RIGHT:
+        tile =
+            tetromino->tiles[tetromino->dimension * (tetromino->dimension - 1) -
+                             tetromino->dimension * x + y];
+        break;
+      case DOWN:
+        tile =
+            tetromino->tiles[(tetromino->dimension * tetromino->dimension - 1) -
+                             tetromino->dimension * y - x];
+        break;
+      case LEFT:
+        tile = tetromino->tiles[tetromino->dimension - 1 +
+                                tetromino->dimension * x - y];
+        break;
+      default:
+        break;
+      }
       if (tile) {
-        drawTileC(tetromino->board, (Vector2){x, y}, tetromino->color);
+        drawTileC(
+            tetromino->board,
+            (Vector2){tetromino->position.x + x, tetromino->position.y + y},
+            tetromino->color);
       }
     }
   }
 }
 
-void deleteTetromino(Tetromino *tetromino) {
-  free(tetromino->tiles);
-  free(tetromino->board);
+void rotateClockwise(Tetromino *tetromino) {
+  tetromino->rotation = (Rotation)(((int)tetromino->rotation + 1) % 4);
 }
+
+void rotateCounterClockwise(Tetromino *tetromino) {
+  switch (tetromino->rotation) {
+  case UP:
+    tetromino->rotation = LEFT;
+    break;
+  default:
+    tetromino->rotation = (Rotation)((int)tetromino->rotation - 1);
+    break;
+  }
+}
+
+void deleteTetromino(Tetromino *tetromino) { free(tetromino->tiles); }

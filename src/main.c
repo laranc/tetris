@@ -10,11 +10,8 @@ int main(void) {
 
   Game game = gameInit(screen_size, "Tetris", GAME_FPS, board_pos, board_size,
                        TILE_SIZE, TILE_PADDING);
-
   gameStart(&game);
-
   gameRun(&game);
-
   gameClose(&game);
 
   return 0;

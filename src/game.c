@@ -24,6 +24,7 @@ void gameStart(Game *game) {
   printf("Starting...");
   assert(!GetWindowHandle());
   InitWindow(game->screen_size.x, game->screen_size.y, game->title);
+  game->current_tetromino = initTetromino(&game->board, JAY);
   SetTargetFPS(game->fps);
 }
 
@@ -43,16 +44,23 @@ void gameTick(Game *game) {
 void gameClose(Game *game) {
   printf("Closing...");
   deleteBoard(&game->board);
+  deleteTetromino(&game->current_tetromino);
   assert(GetWindowHandle());
   CloseWindow();
 }
 
-static void update(Game *game) {}
+static void update(Game *game) {
+  if (IsKeyPressed(KEY_E)) {
+    rotateClockwise(&game->current_tetromino);
+  }
+  if (IsKeyPressed(KEY_Q)) {
+    rotateCounterClockwise(&game->current_tetromino);
+  }
+}
 
 static void draw(Game *game) {
   ClearBackground(BLACK);
-  Tetromino test = initTetromino(&game->board, TEE);
-  drawTetromino(&test);
   drawBoard(&game->board);
   drawBorder(&game->board);
+  drawTetromino(&game->current_tetromino);
 }
