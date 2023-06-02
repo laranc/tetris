@@ -18,6 +18,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 find_package(raylib 4.2 REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    m
     raylib
 )
 
